@@ -54,6 +54,12 @@ export abstract class OwlDateTime<T> {
     @Input()
     startView: 'month' | 'year' | 'multi-years' = 'month';
 
+    /** 
+     * Should datepicker hide cancel and set buttons and emit values instantly instead.
+     */
+    @Input()
+    public instantSelection: boolean = false;
+
     /**
      * Hours to change per step
      */

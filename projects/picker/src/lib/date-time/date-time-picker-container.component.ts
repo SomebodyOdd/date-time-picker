@@ -77,9 +77,9 @@ export class OwlDateTimeContainerComponent<T>
     /**
      * Stream emits when try to confirm the selected value
      * */
-    private confirmSelected$ = new Subject<any>();
+    private confirmSelected$ = new Subject<DateSelectionEvent>();
 
-    get confirmSelectedStream(): Observable<any> {
+    get confirmSelectedStream(): Observable<DateSelectionEvent> {
         return this.confirmSelected$.asObservable();
     }
 
@@ -164,7 +164,7 @@ export class OwlDateTimeContainerComponent<T>
     get showControlButtons(): boolean {
         return (
             this.picker.pickerMode === 'dialog' ||
-            (this.picker.pickerType !== 'calendar' &&
+            (!this.picker.instantSelection && this.picker.pickerType !== 'calendar' &&
                 this.picker.pickerMode !== 'inline')
         );
     }
@@ -247,16 +247,16 @@ export class OwlDateTimeContainerComponent<T>
                     this.hidePicker$.next(null);
                 }
             }
-            return;
-        }
-
-        if (this.picker.isInRangeMode) {
+        } 
+        else if (this.picker.isInRangeMode) {
             result = this.dateSelectedInRangeMode(date);
             if (result) {
                 this.pickerMoment = result[this.activeSelectedIndex];
                 this.picker.select(result);
             }
         }
+        if(this.picker.instantSelection)
+            this.confirmSelected$.next({ sourceEvent: undefined, shouldClose: false });
     }
 
     public timeSelected(time: T): void {
@@ -267,11 +267,9 @@ export class OwlDateTimeContainerComponent<T>
         }
 
         if (this.picker.isInSingleMode) {
-            this.picker.select(this.pickerMoment);
-            return;
+            this.picker.select(this.pickerMoment); 
         }
-
-        if (this.picker.isInRangeMode) {
+        else if (this.picker.isInRangeMode) {
             const selecteds = [...this.picker.selecteds];
 
             // check if the 'from' is after 'to' or 'to'is before 'from'
@@ -304,6 +302,8 @@ export class OwlDateTimeContainerComponent<T>
             }
             this.picker.select(selecteds);
         }
+        if(this.picker.instantSelection)
+            this.confirmSelected$.next({ sourceEvent: undefined, shouldClose: false });
     }
 
     /**
@@ -325,7 +325,7 @@ export class OwlDateTimeContainerComponent<T>
             return;
         }
 
-        this.confirmSelected$.next(event);
+        this.confirmSelected$.next({ sourceEvent: event, shouldClose: true });
         event.preventDefault();
         return;
     }
@@ -388,7 +388,7 @@ export class OwlDateTimeContainerComponent<T>
     }
 
     private initPicker(): void {
-        this.pickerMoment = this.picker.startAt || this.dateTimeAdapter.now();
+        this.pickerMoment = this.picker.selected || this.picker.startAt || this.dateTimeAdapter.now();
         this.activeSelectedIndex = this.picker.selectMode === 'rangeTo' ? 1 : 0;
     }
 
@@ -538,4 +538,9 @@ export class OwlDateTimeContainerComponent<T>
             this.timer.focus();
         }
     }
+}
+
+export class DateSelectionEvent {
+    sourceEvent: any;
+    shouldClose: boolean;
 }

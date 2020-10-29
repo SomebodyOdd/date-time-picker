@@ -30,7 +30,7 @@ import {
 } from '@angular/cdk/overlay';
 import { ESCAPE, UP_ARROW } from '@angular/cdk/keycodes';
 import { coerceArray, coerceBooleanProperty } from '@angular/cdk/coercion';
-import { OwlDateTimeContainerComponent } from './date-time-picker-container.component';
+import { DateSelectionEvent, OwlDateTimeContainerComponent } from './date-time-picker-container.component';
 import { OwlDateTimeInputDirective } from './date-time-picker-input.directive';
 import { DateTimeAdapter } from './adapter/date-time-adapter.class';
 import {
@@ -394,16 +394,14 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
             this.selecteds = this._dtInput.values;
         }
 
-        // when the picker is open , we make sure the picker's current selected time value
-        // is the same as the _startAt time value.
-        if (this.selected && this.pickerType !== 'calendar' && this._startAt) {
+        if (this.selected && this.pickerType !== 'calendar') {
             this.selected = this.dateTimeAdapter.createDate(
                 this.dateTimeAdapter.getYear(this.selected),
                 this.dateTimeAdapter.getMonth(this.selected),
                 this.dateTimeAdapter.getDate(this.selected),
-                this.dateTimeAdapter.getHours(this._startAt),
-                this.dateTimeAdapter.getMinutes(this._startAt),
-                this.dateTimeAdapter.getSeconds(this._startAt)
+                this.dateTimeAdapter.getHours(this.selected),
+                this.dateTimeAdapter.getMinutes(this.selected),
+                this.dateTimeAdapter.getSeconds(this.selected)
             );
         }
 
@@ -420,7 +418,7 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
 
         // Listen to picker container's confirmSelectedStream
         this.confirmSelectedStreamSub = this.pickerContainer.confirmSelectedStream.subscribe(
-            (event: any) => {
+            (event: DateSelectionEvent) => {
                 this.confirmSelect(event);
             }
         );
@@ -539,7 +537,7 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
     /**
      * Confirm the selected value
      */
-    public confirmSelect(event?: any): void {
+    public confirmSelect(event?: DateSelectionEvent): void {
         if (this.isInSingleMode) {
             const selected =
                 this.selected || this.startAt || this.dateTimeAdapter.now();
@@ -548,7 +546,8 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
             this.confirmSelectedChange.emit(this.selecteds);
         }
 
-        this.close();
+        if(!event || event.shouldClose)
+            this.close();
         return;
     }
 
