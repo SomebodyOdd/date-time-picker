@@ -243,7 +243,7 @@ export class OwlDateTimeContainerComponent<T>
                 this.picker.select(result);
             } else {
                 // we close the picker when result is null and pickerType is calendar.
-                if (this.pickerType === 'calendar') {
+                if (this.pickerType === 'calendar' || this.pickerType === 'both') {
                     this.hidePicker$.next(null);
                 }
             }
