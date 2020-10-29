@@ -98,6 +98,7 @@ Properties for `owl-date-time`
 |:--- |:--- |:--- |:--- |:--- |
 |`pickerType`|`both`, `calendar`, `timer`|Optional|`both`| Set the type of the dateTime picker. `both`: show both calendar and timer, `calendar`: only show calendar, `timer`: only show timer. |
 |`pickerMode`|`popup`, `dialog`|Optional|`popup`| The style the picker would open as. |
+|`instantSelection`|boolean|Optional|`false`| Should datepicker hide it's cancel and save buttons and just emit picked values instantly instead. |
 |`startView`|`month`, `year`, `multi-year`|Optional|`month`| The view that the calendar should start in. |
 |`startAt`| T/null |Optional|`null`| The moment to open the picker to initially. |
 |`endAt`| T/null |Optional|`null`| The the default selected time for range calendar end time | 
