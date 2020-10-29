@@ -1,5 +1,5 @@
 {
-  "name": "@somebodyodd/angular-datetime-picker",
+  "name": "ng-pick-datetime",
   "version": "10.0.1",
   "description": "Angular Date Time Picker",
   "keywords": [
